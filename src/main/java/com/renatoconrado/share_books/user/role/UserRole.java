@@ -1,5 +1,6 @@
-package com.renatoconrado.share_books.User.model;
+package com.renatoconrado.share_books.user.role;
 
+import com.renatoconrado.share_books.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;

@@ -1,4 +1,4 @@
-package com.renatoconrado.share_books.User.model;
+package com.renatoconrado.share_books.user.role;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

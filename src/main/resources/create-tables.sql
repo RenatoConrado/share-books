@@ -26,3 +26,14 @@ CREATE TABLE public.user_roles (
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
 );
+
+CREATE TABLE tokens (
+    id           uuid         NOT NULL DEFAULT gen_random_uuid(),
+    content      varchar(255) NOT NULL,
+    created_at   timestamp,
+    expires_at   timestamp,
+    validated_at timestamp,
+    user_id      uuid         NOT NULL,
+    CONSTRAINT pk_tokens PRIMARY KEY (id),
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id)
+);

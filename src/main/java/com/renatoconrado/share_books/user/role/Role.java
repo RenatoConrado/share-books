@@ -1,4 +1,4 @@
-package com.renatoconrado.share_books.User.model;
+package com.renatoconrado.share_books.user.role;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

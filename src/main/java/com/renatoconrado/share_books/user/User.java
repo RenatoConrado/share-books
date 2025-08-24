@@ -1,5 +1,6 @@
-package com.renatoconrado.share_books.User.model;
+package com.renatoconrado.share_books.user;
 
+import com.renatoconrado.share_books.user.role.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
