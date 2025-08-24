@@ -8,14 +8,16 @@
 
 ## compose.yaml
 
-[How to use Postgres image](https://docs.docker.com/guides/java/develop/#dockerfile-for-development)
+### Postgres
 
-[Use containers for Java development](https://docs.docker.com/guides/java/develop/)
+- [How to use Postgres image](https://docs.docker.com/guides/java/develop/#dockerfile-for-development)
+- [Use containers for Java development](https://docs.docker.com/guides/java/develop/)
+- [How to set up a DockerFile](https://docs.docker.com/guides/java/develop/#dockerfile-for-development) for future references
 
-[How to set up a DockerFile](https://docs.docker.com/guides/java/develop/#dockerfile-for-development) for future references
+### MailDev
 
-Test generated emails via [MailDev](https://github.com/maildev/maildev)
-[Configuring MailDev](https://github.com/maildev/maildev?tab=readme-ov-file#configure-your-project)
+- Test generated emails via [MailDev](https://github.com/maildev/maildev)
+- [Configuring MailDev](https://github.com/maildev/maildev?tab=readme-ov-file#configure-your-project)
 
 ## JPA Auditing
 
@@ -27,7 +29,7 @@ Test generated emails via [MailDev](https://github.com/maildev/maildev)
 
 ![Security Diagram](diagrams/Security.png)
 
-## User RelationShip
+## User Relationship
 
 ![User Relationship](diagrams/Database.png)
 
@@ -51,3 +53,17 @@ userRole.setAssignedAt(Instant.now());
 user.getUserRoles().add(userRole);
 role.getUserRoles().add(userRole);
 ```
+
+## Web Security
+
+### `@EnableWebSecurity`
+
+- Spring.docs - [Guide Securing a Web Application](https://spring.io/guides/gs/securing-web#initial)
+
+### `@EnableMethodSecurity`
+
+- Baeldung - [explanation](https://www.baeldung.com/spring-enablemethodsecurity)
+- Spring.docs - [API Reference](https://docs.spring.io/spring-security/reference/servlet/authorization/method-security.html)
+- Medium - [Securing Spring Applications with Method-Level Security](https://medium.com/@punnapavankumar9/securing-spring-applications-with-method-level-security-5fb70811179e)
+
+## Spring Doc - Open API
