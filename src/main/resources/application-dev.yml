@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/share-books
+    username: postgres
+    password: ${DB_PASSWORD}
+  jpa:
+    show-sql: true
+    properties.hibernate:
+      format_sql: true
+    hibernate:
+      ddl-auto: none
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  # MailDev
+  mail:
+    host: localhost
+    port: 1025
+    username: admin
+    password: admin
+    properties:
+      mail:
+        smtp:
+          trust: '*'
+          auth: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+          starttls:
+            enable: true
+            required: true
+logging:
+  pattern:
+    dateformat: ''

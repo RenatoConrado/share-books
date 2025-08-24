@@ -1,0 +1,34 @@
+services:
+  postgres:
+    container_name: database-share
+    image: postgres:17.6
+    environment:
+      POSTGRES_DB: share-books
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - share-network
+  mail-dev:
+    container_name: test-mails
+    image: maildev/maildev
+    ports:
+      - '1080:1080'
+      - '1025:1025'
+
+volumes:
+  db-data:
+    driver: local
+
+networks:
+  share-network:
+    driver: bridge
