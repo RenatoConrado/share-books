@@ -67,3 +67,7 @@ role.getUserRoles().add(userRole);
 - Medium - [Securing Spring Applications with Method-Level Security](https://medium.com/@punnapavankumar9/securing-spring-applications-with-method-level-security-5fb70811179e)
 
 ## Spring Doc - Open API
+
+## `@Async`
+
+- Annotate `application` as `@EnableAsync`, now use `@Async` in the method

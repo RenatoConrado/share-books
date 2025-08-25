@@ -8,6 +8,7 @@ import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -25,18 +26,18 @@ public class Token {
     private UUID id;
 
     @Size(max = 255)
-    @NotNull
+    @NotNull(message = "Required Field")
     @Column(name = "content", nullable = false)
     private String content;
 
     @Column(name = "created_at")
-    private Instant createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "expires_at")
-    private Instant expiresAt;
+    private LocalDateTime expiresAt;
 
     @Column(name = "validated_at")
-    private Instant validatedAt;
+    private LocalDateTime validatedAt;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

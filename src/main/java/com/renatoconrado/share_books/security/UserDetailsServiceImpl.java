@@ -1,6 +1,7 @@
 package com.renatoconrado.share_books.security;
 
 import com.renatoconrado.share_books.user.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -13,13 +14,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+    @Transactional
     @Override
-    public UserDetails loadUserByUsername(String username)
+    public UserDetails loadUserByUsername(String email)
         throws UsernameNotFoundException {
-        this.userRepository
-            .findByEmail(username)
+        return this.userRepository
+            .findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException("User Details not Found"));
-
-        return ;
     }
 }

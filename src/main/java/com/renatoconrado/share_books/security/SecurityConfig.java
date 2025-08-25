@@ -1,5 +1,6 @@
 package com.renatoconrado.share_books.security;
 
+import com.renatoconrado.share_books.security.jwt.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;

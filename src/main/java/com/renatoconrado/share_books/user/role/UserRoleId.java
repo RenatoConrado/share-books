@@ -28,6 +28,11 @@ public class UserRoleId implements Serializable {
     @Column(name = "role_id", nullable = false)
     private UUID roleId;
 
+    public UserRoleId(UUID userId, UUID roleId) {
+        this.userId = userId;
+        this.roleId = roleId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -43,7 +48,7 @@ public class UserRoleId implements Serializable {
 
     @Override
     public int hashCode() {
-        return Objects.hash(roleId, userId);
+        return Objects.hash(this.roleId, this.userId);
     }
 
 }

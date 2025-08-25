@@ -4,13 +4,15 @@ import com.renatoconrado.share_books.user.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 
+@Slf4j
 @Getter
 @Setter
 @Entity
@@ -35,6 +37,17 @@ public class UserRole {
 
     @LastModifiedDate
     @Column(name = "assigned_at")
-    private Instant assignedAt;
+    private LocalDateTime assignedAt;
 
+    public UserRole(User user, Role role) {
+        this.user = user;
+        this.role = role;
+        this.id = new UserRoleId(user.getId(), role.getId());
+        log.info(
+            "userRoleId: {}, userId: {}, roleId: {}",
+            this.id, user.getId(), role.getId()
+        );
+    }
+
+    public UserRole() {}
 }

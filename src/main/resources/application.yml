@@ -20,3 +20,12 @@ server:
   port: 8080
   servlet:
     context-path: /api/v1/
+
+application:
+  security:
+    jwt:
+      secret-key: ${SECRET_KEY}
+      expiration: 8640000
+    mail:
+      frontend:
+        activation-url: http://localhost:4200/activate-account

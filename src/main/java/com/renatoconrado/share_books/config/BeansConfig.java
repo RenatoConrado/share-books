@@ -20,7 +20,7 @@ public class BeansConfig {
     ) {
         var authProvider = new DaoAuthenticationProvider(userDetailsService);
         authProvider.setPasswordEncoder(passwordEncoder);
-
+        return authProvider;
     }
 
     @Bean

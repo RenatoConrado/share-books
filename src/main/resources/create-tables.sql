@@ -8,7 +8,7 @@ CREATE TABLE public.users (
     created_at timestamp             DEFAULT NOW(),
     updated_at timestamp             DEFAULT NOW(),
     is_locked  boolean      NOT NULL DEFAULT FALSE,
-    is_active  boolean      NOT NULL DEFAULT TRUE,
+    is_active  boolean      NOT NULL DEFAULT FALSE,
     CONSTRAINT pk_users PRIMARY KEY (id)
 );
 
@@ -17,6 +17,8 @@ CREATE TABLE public.roles (
     name varchar(20) NOT NULL UNIQUE,
     CONSTRAINT pk_roles PRIMARY KEY (id)
 );
+
+INSERT INTO roles (name) VALUES ('USER');
 
 CREATE TABLE public.user_roles (
     user_id     uuid NOT NULL,
