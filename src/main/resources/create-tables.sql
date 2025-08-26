@@ -12,6 +12,8 @@ CREATE TABLE public.users (
     CONSTRAINT pk_users PRIMARY KEY (id)
 );
 
+DROP TABLE public.users CASCADE;
+
 CREATE TABLE public.roles (
     id   uuid        NOT NULL DEFAULT gen_random_uuid(),
     name varchar(20) NOT NULL UNIQUE,
@@ -39,3 +41,11 @@ CREATE TABLE tokens (
     CONSTRAINT pk_tokens PRIMARY KEY (id),
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users(id)
 );
+
+SELECT * FROM users;
+
+SELECT * FROM roles;
+
+SELECT * FROM user_roles;
+
+SELECT * FROM tokens;

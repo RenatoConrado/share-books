@@ -57,6 +57,6 @@ public class EmailService {
 
         helper.setText(template, true);
 
-        mailSender.send(mimeMessage);
+        this.mailSender.send(mimeMessage);
     }
 }

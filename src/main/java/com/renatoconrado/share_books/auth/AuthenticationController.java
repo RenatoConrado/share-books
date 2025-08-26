@@ -18,11 +18,29 @@ public class AuthenticationController {
     private final AuthenticationService service;
 
     @ResponseStatus(HttpStatus.OK)
-    @PostMapping("")
-    public ResponseEntity<Object> post(@Valid @RequestBody RegisterRequest request)
-        throws MessagingException {
-        this.service.register(request);
-        return ResponseEntity.accepted().build();
+    @GetMapping
+    public ResponseEntity<String> get() {
+        return ResponseEntity.ok().body("auth OK");
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<Object> register(@RequestBody RegisterRequest request) {
+        try {
+            this.service.register(request);
+        }
+        catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+        catch (MessagingException e) {
+            return ResponseEntity.internalServerError().body(e.getMessage());
+        }
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/authenticate")
+    public ResponseEntity<Object> authenticate(@Valid @RequestBody String value) {
+        return null;
     }
 
 }

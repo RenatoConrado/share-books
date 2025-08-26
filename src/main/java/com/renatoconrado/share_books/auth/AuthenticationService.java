@@ -13,6 +13,7 @@ import com.renatoconrado.share_books.user.token.Token;
 import com.renatoconrado.share_books.user.token.TokenRepository;
 import jakarta.mail.MessagingException;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,7 +39,7 @@ public class AuthenticationService {
     private String activationUrl;
 
     @Transactional
-    public void register(RegisterRequest request) throws MessagingException {
+    public void register(@Valid RegisterRequest request) throws MessagingException {
         Role role = this.roleRepository.findByName(DEFAULT_ROLE)
             .orElseThrow(() -> new EntityNotFoundException(DEFAULT_ROLE, Role.class));
 

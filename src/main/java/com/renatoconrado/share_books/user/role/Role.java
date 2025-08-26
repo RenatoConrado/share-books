@@ -11,10 +11,10 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
 
-@Getter
 @Setter
-@Entity
+@Getter
 @Table(catalog = "share-books", schema = "public", name = "roles")
+@Entity
 public class Role {
 
     @Id
@@ -31,4 +31,9 @@ public class Role {
     @JsonIgnore
     private Set<UserRole> userRoles = new LinkedHashSet<>();
 
+    public Role() {}
+
+    public Role(String name) {
+        this.name = name;
+    }
 }
