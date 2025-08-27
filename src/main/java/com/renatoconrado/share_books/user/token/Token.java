@@ -2,12 +2,11 @@ package com.renatoconrado.share_books.user.token;
 
 import com.renatoconrado.share_books.user.User;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -26,7 +25,7 @@ public class Token {
     private UUID id;
 
     @Size(max = 255)
-    @NotNull(message = "Required Field")
+    @NotBlank(message = "Field Cannot be empty")
     @Column(name = "content", nullable = false)
     private String content;
 
@@ -44,4 +43,16 @@ public class Token {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    public static Token newActivationToken(String content, User user) {
+        return Token.builder()
+            .content(content)
+            .createdAt(LocalDateTime.now())
+            .expiresAt(LocalDateTime.now().plusMinutes(30))
+            .user(user)
+            .build();
+    }
+
+    public boolean hasExpired() {
+        return LocalDateTime.now().isAfter(this.expiresAt);
+    }
 }

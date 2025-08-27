@@ -1,6 +1,5 @@
 package com.renatoconrado.share_books.user;
 
-import com.renatoconrado.share_books.user.role.Role;
 import com.renatoconrado.share_books.user.role.UserRole;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -15,7 +14,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.security.auth.Subject;
 import java.security.Principal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -32,19 +34,19 @@ public class User implements UserDetails, Principal {
     @Column(name = "id", nullable = false)
     private UUID id;
 
-    @Size(max = 70, message = "Max size of 70 characters")
-    @NotNull(message = "Field Cannot be null")
+    @Size(min = 2, max = 70, message = "Min size of 2, Max size of 70 characters")
+    @NotBlank(message = "Field Cannot be empty")
     @Column(name = "username", nullable = false, length = 70, unique = true)
     private String username;
 
     @Email(message = "Email invalid")
     @Size(max = 255, message = "Max size of 255 characters")
-    @NotNull(message = "Field Cannot be null")
+    @NotBlank(message = "Field Cannot be empty")
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Size(min = 8, max = 255, message = "minimum size of 8 characters")
-    @NotNull(message = "Field Cannot be null")
+    @NotBlank(message = "Field Cannot be empty")
     @Column(name = "password", nullable = false)
     private String password;
 
@@ -66,16 +68,19 @@ public class User implements UserDetails, Principal {
     @Column(name = "updated_at", insertable = false)
     private LocalDateTime updatedAt;
 
+    @Builder.Default
     @NotNull(message = "Field Cannot be null")
     @ColumnDefault("false")
     @Column(name = "is_locked", nullable = false)
     private Boolean isLocked = false;
 
+    @Builder.Default
     @NotNull(message = "Field Cannot be null")
     @ColumnDefault("false")
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = false;
 
+    @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserRole> userRoles = new LinkedHashSet<>();
 

@@ -27,5 +27,6 @@ application:
       secret-key: ${SECRET_KEY}
       expiration: 8640000
     mail:
+      contact-email: contact@renato.com
       frontend:
         activation-url: http://localhost:4200/activate-account

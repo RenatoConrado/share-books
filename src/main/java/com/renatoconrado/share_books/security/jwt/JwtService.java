@@ -20,15 +20,15 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    private final long jwtExpiration;
-    private final String secretKey;
+    private final long JWT_EXPIRATION;
+    private final String SECRET_KEY;
 
     public JwtService(
-        @Value("${application.security.jwt.secret-key}") String secretKey,
-        @Value("${application.security.jwt.expiration}") long jwtExpiration
+        @Value("${application.security.jwt.secret-key}") String SECRET_KEY,
+        @Value("${application.security.jwt.expiration}") long JWT_EXPIRATION
     ) {
-        this.jwtExpiration = jwtExpiration;
-        this.secretKey = secretKey;
+        this.JWT_EXPIRATION = JWT_EXPIRATION;
+        this.SECRET_KEY = SECRET_KEY;
     }
 
     public String extractUsername(String token) {
@@ -68,7 +68,7 @@ public class JwtService {
         Map<String, Object> claims,
         UserDetails userDetails
     ) {
-        return this.buildToken(claims, userDetails, this.jwtExpiration);
+        return this.buildToken(new HashMap<>(claims), userDetails, this.JWT_EXPIRATION);
     }
 
     private String buildToken(
@@ -78,8 +78,8 @@ public class JwtService {
     ) {
         var authorities = userDetails.getAuthorities()
             .stream().map(GrantedAuthority::getAuthority).toList();
-
         extraClaims.put("authorities", authorities);
+
         var now = Instant.now();
 
         var builderClaims = Jwts.builder()
@@ -93,7 +93,7 @@ public class JwtService {
     }
 
     private Key getSignInKey() {
-        byte[] keyBytes = Decoders.BASE64.decode(this.secretKey);
+        byte[] keyBytes = Decoders.BASE64.decode(this.SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }
 }

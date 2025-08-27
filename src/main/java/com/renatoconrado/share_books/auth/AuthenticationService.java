@@ -1,100 +1,111 @@
 package com.renatoconrado.share_books.auth;
 
+import com.renatoconrado.share_books.auth.dto.AuthenticationRequest;
+import com.renatoconrado.share_books.auth.dto.AuthenticationResponse;
 import com.renatoconrado.share_books.auth.dto.RegisterRequest;
 import com.renatoconrado.share_books.email.EmailService;
 import com.renatoconrado.share_books.email.EmailTemplate;
-import com.renatoconrado.share_books.errorHandling.exceptions.EntityNotFoundException;
+import com.renatoconrado.share_books.errorHandling.exceptions.TokenExpiredException;
+import com.renatoconrado.share_books.security.jwt.JwtService;
 import com.renatoconrado.share_books.user.User;
-import com.renatoconrado.share_books.user.UserRepository;
-import com.renatoconrado.share_books.user.role.Role;
-import com.renatoconrado.share_books.user.role.RoleRepository;
-import com.renatoconrado.share_books.user.role.UserRole;
+import com.renatoconrado.share_books.user.UserService;
 import com.renatoconrado.share_books.user.token.Token;
-import com.renatoconrado.share_books.user.token.TokenRepository;
+import com.renatoconrado.share_books.user.token.TokenService;
 import jakarta.mail.MessagingException;
-import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
-import java.util.Set;
+import java.util.Map;
 
 @RequiredArgsConstructor
 @Service
 public class AuthenticationService {
 
-    private static final String DEFAULT_ROLE = "USER";
-
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
-    private final TokenRepository tokenRepository;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final TokenService tokenService;
     private final EmailService emailService;
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     @Value("${application.security.mail.frontend.activation-url}")
     private String activationUrl;
 
-    @Transactional
     public void register(@Valid RegisterRequest request) throws MessagingException {
-        Role role = this.roleRepository.findByName(DEFAULT_ROLE)
-            .orElseThrow(() -> new EntityNotFoundException(DEFAULT_ROLE, Role.class));
-
         User user = User.builder()
-            .username(request.getUsername())
-            .email(request.getEmail())
-            .password(this.passwordEncoder.encode(request.getPassword()))
-            .realName(request.getRealName())
-            .birthdate(request.getBirthdate())
+            .username(request.username())
+            .email(request.email())
+            .password(this.passwordEncoder.encode(request.password()))
+            .realName(request.realName())
+            .birthdate(request.birthdate())
             .isLocked(false)
             .isActive(false)
             .build();
 
-        UserRole userRole = new UserRole(user, role);
-        user.setUserRoles(Set.of(userRole));
-
-        this.userRepository.save(user);
+        this.userService.registerUser(user);
         this.sendValidationEmail(user);
     }
 
     private void sendValidationEmail(User user) throws MessagingException {
-        String token = this.generateAndSaveActivationToken(user);
+        String tokenContent = this.generateAndSaveActivationToken(user);
         this.emailService.sendEmail(
             user.getEmail(),
             user.getUsername(),
             EmailTemplate.Name.ACTIVATE_ACCOUNT,
             this.activationUrl,
-            token,
+            tokenContent,
             "Account activation"
         );
 
     }
 
     private String generateAndSaveActivationToken(User user) {
-        String generatedToken = this.generateActivationToken(6);
-        var token = Token.builder()
-            .content(generatedToken)
-            .createdAt(LocalDateTime.now())
-            .expiresAt(LocalDateTime.now().plusMinutes(30))
-            .user(user)
-            .build();
-        this.tokenRepository.save(token);
-        return generatedToken;
+        String tokenContent = this.tokenService.generateActivationTokenContent(6);
+        Token token = Token.newActivationToken(tokenContent, user);
+        this.tokenService.save(token);
+        return tokenContent;
     }
 
-    private String generateActivationToken(int length) {
-        var characters = "0123456789";
-        var codeBuilder = new StringBuilder();
-        var secureRandom = new SecureRandom();
+    public AuthenticationResponse authenticate(@Valid AuthenticationRequest request) {
+        var auth = this.authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(
+                request.email(),
+                request.password()
+            )
+        );
+        var user = (User) auth.getPrincipal();
 
-        for (int i = 0; i < length; i++) {
-            int randomI = secureRandom.nextInt(characters.length());
-            codeBuilder.append(characters.charAt(randomI));
+        String jwtToken;
+        if (user.getRealName() != null) {
+            Map<String, Object> claims = Map.of("fullName", user.getRealName());
+
+            jwtToken = this.jwtService.generateToken(claims, user);
+            return new AuthenticationResponse(jwtToken);
         }
-        return codeBuilder.toString();
+
+        jwtToken = this.jwtService.generateToken(user);
+        return new AuthenticationResponse(jwtToken);
     }
 
+    public void activateAccount(String token) throws MessagingException {
+        Token savedToken = this.tokenService.findByContent(token);
+
+        if (savedToken.hasExpired()) {
+            this.sendValidationEmail(savedToken.getUser());
+            throw new TokenExpiredException("A new Token has been sent.");
+        }
+
+        User user = this.userService.findById(savedToken.getUser().getId());
+        user.setIsActive(true);
+        this.userService.savePersistedUser(user);
+
+        savedToken.setValidatedAt(LocalDateTime.now());
+        this.tokenService.save(savedToken);
+    }
 }

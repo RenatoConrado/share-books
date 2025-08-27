@@ -12,7 +12,6 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
-@Slf4j
 @Getter
 @Setter
 @Entity
@@ -43,10 +42,6 @@ public class UserRole {
         this.user = user;
         this.role = role;
         this.id = new UserRoleId(user.getId(), role.getId());
-        log.info(
-            "userRoleId: {}, userId: {}, roleId: {}",
-            this.id, user.getId(), role.getId()
-        );
     }
 
     public UserRole() {}

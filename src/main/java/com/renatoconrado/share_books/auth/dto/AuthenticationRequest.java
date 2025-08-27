@@ -2,18 +2,9 @@ package com.renatoconrado.share_books.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
-import lombok.Builder;
 
-import java.time.LocalDateTime;
-
-@Builder
-public record RegisterRequest(
-    @Size(min = 2, max = 70, message = "Min size of 2, Max size of 70 characters")
-    @NotBlank(message = "Field Cannot be empty")
-    String username,
-
+public record AuthenticationRequest(
     @Email(message = "Email invalid")
     @Size(max = 255, message = "Max size of 255 characters")
     @NotBlank(message = "Field Cannot be empty")
@@ -21,11 +12,5 @@ public record RegisterRequest(
 
     @Size(min = 8, max = 255, message = "minimum size of 8 characters")
     @NotBlank(message = "Field Cannot be empty")
-    String password,
-
-    @Size(max = 70, message = "Max size of 70 characters")
-    String realName,
-
-    @Past(message = "Date must be in the past")
-    LocalDateTime birthdate
+    String password
 ) {}

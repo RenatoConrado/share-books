@@ -33,6 +33,8 @@ public class UserRoleId implements Serializable {
         this.roleId = roleId;
     }
 
+    public UserRoleId() {}
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
