@@ -5,12 +5,14 @@ import com.renatoconrado.share_books.auth.dto.AuthenticationResponse;
 import com.renatoconrado.share_books.auth.dto.RegisterRequest;
 import com.renatoconrado.share_books.email.EmailService;
 import com.renatoconrado.share_books.email.EmailTemplate;
-import com.renatoconrado.share_books.errorHandling.exceptions.TokenExpiredException;
+import com.renatoconrado.share_books.errorHandling.exceptions.ActivationCodeExpired;
+import com.renatoconrado.share_books.errorHandling.exceptions.ActivationCodeNotExists;
 import com.renatoconrado.share_books.security.jwt.JwtService;
 import com.renatoconrado.share_books.user.User;
+import com.renatoconrado.share_books.user.UserRepository;
 import com.renatoconrado.share_books.user.UserService;
-import com.renatoconrado.share_books.user.token.Token;
-import com.renatoconrado.share_books.user.token.TokenService;
+import com.renatoconrado.share_books.user.token.ActivationCode;
+import com.renatoconrado.share_books.user.token.ActivationCodeService;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -22,14 +24,16 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
 public class AuthenticationService {
 
     private final UserService userService;
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final TokenService tokenService;
+    private final ActivationCodeService codeService;
     private final EmailService emailService;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
@@ -37,7 +41,7 @@ public class AuthenticationService {
     @Value("${application.security.mail.frontend.activation-url}")
     private String activationUrl;
 
-    public void register(@Valid RegisterRequest request) throws MessagingException {
+    public UUID register(@Valid RegisterRequest request) throws MessagingException {
         User user = User.builder()
             .username(request.username())
             .email(request.email())
@@ -48,8 +52,9 @@ public class AuthenticationService {
             .isActive(false)
             .build();
 
-        this.userService.registerUser(user);
+        UUID id = this.userService.registerUser(user);
         this.sendValidationEmail(user);
+        return id;
     }
 
     private void sendValidationEmail(User user) throws MessagingException {
@@ -66,13 +71,37 @@ public class AuthenticationService {
     }
 
     private String generateAndSaveActivationToken(User user) {
-        String tokenContent = this.tokenService.generateActivationTokenContent(6);
-        Token token = Token.newActivationToken(tokenContent, user);
-        this.tokenService.save(token);
+        String tokenContent = this.codeService.generateActivationTokenContent(6);
+        ActivationCode activationCode = ActivationCode.newActivationToken(
+            tokenContent,
+            user
+        );
+        this.codeService.save(activationCode);
         return tokenContent;
     }
 
-    public AuthenticationResponse authenticate(@Valid AuthenticationRequest request) {
+    public void activateAccount(String code) throws MessagingException {
+        ActivationCode savedActivationCode = this.codeService.findByContent(code);
+
+        if (savedActivationCode.hasExpired()) {
+            this.sendValidationEmail(savedActivationCode.getUser());
+            throw new ActivationCodeExpired(
+                "A new activation code has been sent to your email"
+            );
+        }
+
+        User user = this.userService.findById(savedActivationCode.getUser().getId());
+        user.setIsActive(true);
+        this.userService.savePersistedUser(user);
+
+        savedActivationCode.setValidatedAt(LocalDateTime.now());
+        this.codeService.save(savedActivationCode);
+    }
+
+    public AuthenticationResponse authenticate(@Valid AuthenticationRequest request)
+    throws MessagingException {
+        this.sendEmailIfUserNotHaveActivationCode(request.email());
+
         var authentication = this.authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 request.email(),
@@ -93,19 +122,19 @@ public class AuthenticationService {
         return new AuthenticationResponse(jwtToken);
     }
 
-    public void activateAccount(String token) throws MessagingException {
-        Token savedToken = this.tokenService.findByContent(token);
-
-        if (savedToken.hasExpired()) {
-            this.sendValidationEmail(savedToken.getUser());
-            throw new TokenExpiredException("A new Token has been sent.");
+    private void sendEmailIfUserNotHaveActivationCode(String email)
+    throws MessagingException {
+        var optUser = this.userRepository.findByEmail(email);
+        if (optUser.isEmpty()) {
+            return;
         }
+        var user = optUser.get();
 
-        User user = this.userService.findById(savedToken.getUser().getId());
-        user.setIsActive(true);
-        this.userService.savePersistedUser(user);
-
-        savedToken.setValidatedAt(LocalDateTime.now());
-        this.tokenService.save(savedToken);
+        if (user.getActivationCodes().isEmpty()) {
+            this.sendValidationEmail(user);
+            throw new ActivationCodeNotExists(
+                "A new activation code has been sent to your email"
+            );
+        }
     }
 }

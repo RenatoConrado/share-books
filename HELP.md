@@ -19,6 +19,14 @@
 - Test generated emails via [MailDev](https://github.com/maildev/maildev)
 - [Configuring MailDev](https://github.com/maildev/maildev?tab=readme-ov-file#configure-your-project)
 
+## Login process
+
+1. register user, send activation code to email,
+2. /activate-account using activation code. If expired, send another.
+3. Now user is active. now /authenticate using email and password to generate activationCode JWT
+
+Now you can log in using activationCode JWT.
+
 ## JPA Auditing
 
 1. annotate `Application` with `@EnableJpaAuditing`

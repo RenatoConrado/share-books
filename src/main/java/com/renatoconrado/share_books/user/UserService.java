@@ -20,20 +20,21 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleService roleService;
 
-    public void registerUser(User user) {
+    public UUID registerUser(User user) {
         Role role = this.roleService.findByName("USER");
 
         user.setUserRoles(Set.of(new UserRole(user, role)));
 
-        this.saveNewUser(user);
+        return this.saveNewUser(user).getId();
     }
 
     /**
      * Validate the user and then save it
+     * @return
      * @throws DuplicatedEntityException if fields {@link User#getUsername()}
      * and {@link User#getEmail()} already exists
      */
-    public void saveNewUser(User user) throws DuplicatedEntityException {
+    public User saveNewUser(User user) throws DuplicatedEntityException {
 
         List<String> fields = new ArrayList<>();
         if (this.userRepository.existsByUsername(user.getUsername())) {
@@ -46,7 +47,7 @@ public class UserService {
             throw new DuplicatedEntityException(fields, User.class);
         }
 
-        this.userRepository.save(user);
+        return this.userRepository.save(user);
     }
 
     /**

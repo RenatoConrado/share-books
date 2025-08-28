@@ -12,15 +12,11 @@ CREATE TABLE public.users (
     CONSTRAINT pk_users PRIMARY KEY (id)
 );
 
-DROP TABLE public.users CASCADE;
-
 CREATE TABLE public.roles (
     id   uuid        NOT NULL DEFAULT gen_random_uuid(),
     name varchar(20) NOT NULL UNIQUE,
     CONSTRAINT pk_roles PRIMARY KEY (id)
 );
-
-INSERT INTO roles (name) VALUES ('USER');
 
 CREATE TABLE public.user_roles (
     user_id     uuid NOT NULL,
@@ -31,7 +27,7 @@ CREATE TABLE public.user_roles (
     CONSTRAINT fk_role FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
 );
 
-CREATE TABLE tokens (
+CREATE TABLE activation_codes (
     id           uuid         NOT NULL DEFAULT gen_random_uuid(),
     content      varchar(255) NOT NULL,
     created_at   timestamp,
@@ -48,4 +44,4 @@ SELECT * FROM roles;
 
 SELECT * FROM user_roles;
 
-SELECT * FROM tokens;
+SELECT * FROM activation_codes;

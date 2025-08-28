@@ -1,6 +1,7 @@
 package com.renatoconrado.share_books.user;
 
 import com.renatoconrado.share_books.user.role.UserRole;
+import com.renatoconrado.share_books.user.token.ActivationCode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
@@ -83,6 +84,10 @@ public class User implements UserDetails, Principal {
     @Builder.Default
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<UserRole> userRoles = new LinkedHashSet<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "user")
+    private Set<ActivationCode> activationCodes = new LinkedHashSet<>();
 
     @Override
     public String getName() {

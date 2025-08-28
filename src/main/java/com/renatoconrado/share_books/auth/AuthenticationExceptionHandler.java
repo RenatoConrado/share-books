@@ -1,7 +1,8 @@
 package com.renatoconrado.share_books.auth;
 
 import com.renatoconrado.share_books.errorHandling.dto.ErrorResponse;
-import com.renatoconrado.share_books.errorHandling.exceptions.TokenExpiredException;
+import com.renatoconrado.share_books.errorHandling.exceptions.ActivationCodeExpired;
+import com.renatoconrado.share_books.errorHandling.exceptions.ActivationCodeNotExists;
 import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.security.WeakKeyException;
 import lombok.extern.slf4j.Slf4j;
@@ -21,10 +22,21 @@ import static com.renatoconrado.share_books.errorHandling.GlobalExceptionHandler
 @RestControllerAdvice
 public class AuthenticationExceptionHandler {
 
-    @ExceptionHandler(TokenExpiredException.class)
-    public ResponseEntity<ErrorResponse> handleTokenExpired(TokenExpiredException ex) {
+    @ExceptionHandler(ActivationCodeExpired.class)
+    public ResponseEntity<ErrorResponse> handleTokenExpired(ActivationCodeExpired ex) {
         return buildErrorResponse(
-            "Token has expired",
+            "Activation code has expired",
+            HttpStatus.FORBIDDEN,
+            Map.of("message", ex.getMessage())
+        );
+    }
+
+    @ExceptionHandler(ActivationCodeNotExists.class)
+    public ResponseEntity<ErrorResponse> handleTokenNotExists(
+        ActivationCodeNotExists ex
+    ) {
+        return buildErrorResponse(
+            "Activation code not Exists",
             HttpStatus.FORBIDDEN,
             Map.of("message", ex.getMessage())
         );

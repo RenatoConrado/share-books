@@ -25,11 +25,7 @@ public class GlobalExceptionHandler {
         HttpStatus status,
         Map<String, ?> extraPairs
     ) {
-        var errorDetails = new ErrorResponse(
-            message,
-            status,
-            extraPairs
-        );
+        var errorDetails = new ErrorResponse(message, status, extraPairs);
 
         return new ResponseEntity<>(errorDetails, status);
     }

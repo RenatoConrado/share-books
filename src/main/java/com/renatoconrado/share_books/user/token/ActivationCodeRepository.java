@@ -8,7 +8,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface TokenRepository
-    extends JpaRepository<Token, UUID>, JpaSpecificationExecutor<Token> {
-    Optional<Token> findByContent(String content);
+public interface ActivationCodeRepository
+    extends JpaRepository<ActivationCode, UUID>, JpaSpecificationExecutor<ActivationCode> {
+    Optional<ActivationCode> findByContent(String content);
 }

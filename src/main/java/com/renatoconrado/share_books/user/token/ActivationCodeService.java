@@ -8,17 +8,17 @@ import java.security.SecureRandom;
 
 @RequiredArgsConstructor
 @Service
-public class TokenService {
+public class ActivationCodeService {
 
-    private final TokenRepository tokenRepository;
+    private final ActivationCodeRepository activationCodeRepository;
 
-    public Token findByContent(String token) {
-        return this.tokenRepository.findByContent(token)
-            .orElseThrow(() -> new EntityNotFoundException("token", Token.class));
+    public ActivationCode findByContent(String code) {
+        return this.activationCodeRepository.findByContent(code)
+            .orElseThrow(() -> new EntityNotFoundException(code, ActivationCode.class));
     }
 
-    public void save(Token token) {
-        this.tokenRepository.save(token);
+    public void save(ActivationCode activationCode) {
+        this.activationCodeRepository.save(activationCode);
     }
 
     public String generateActivationTokenContent(int length) {

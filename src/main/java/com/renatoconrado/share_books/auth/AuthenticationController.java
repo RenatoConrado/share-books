@@ -3,6 +3,7 @@ package com.renatoconrado.share_books.auth;
 import com.renatoconrado.share_books.auth.dto.AuthenticationRequest;
 import com.renatoconrado.share_books.auth.dto.AuthenticationResponse;
 import com.renatoconrado.share_books.auth.dto.RegisterRequest;
+import com.renatoconrado.share_books.util.UriUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
@@ -11,12 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-/**
- * 1. register user,
- * 2. Authenticate to generate token JWT
- * 3. /activate-account using token JWT
- * Now you can log in.
- */
+import java.util.UUID;
+
 @RequiredArgsConstructor
 @Tag(name = "Authentication")
 @RequestMapping("/auth")
@@ -28,29 +25,29 @@ public class AuthenticationController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public ResponseEntity<String> get() {
-        return ResponseEntity.ok().body("auth OK");
+        return ResponseEntity.ok("auth OK");
     }
 
     @PostMapping("/register")
     public ResponseEntity<Object> register(@Valid @RequestBody RegisterRequest request)
     throws MessagingException {
-        this.service.register(request);
+        UUID id = this.service.register(request);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.created(UriUtil.buildUri("/users/{id}", id)).build();
+    }
+
+    @GetMapping("/activate-account")
+    public ResponseEntity<String> activateAccount(@RequestParam String code)
+    throws MessagingException {
+        this.service.activateAccount(code);
+        return ResponseEntity.ok("Account successfully activated");
     }
 
     @PostMapping("/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(
         @Valid @RequestBody AuthenticationRequest request
-    ) {
+    ) throws MessagingException {
         return ResponseEntity.ok(this.service.authenticate(request));
-    }
-
-    @GetMapping("/activate-account")
-    public ResponseEntity<String> activateAccount(@RequestParam String token)
-    throws MessagingException {
-        this.service.activateAccount(token);
-        return ResponseEntity.ok().build();
     }
 
 }

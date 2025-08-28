@@ -15,9 +15,9 @@ import java.util.UUID;
 @Builder
 @Setter
 @Getter
-@Table(catalog = "share-books", schema = "public", name = "tokens")
+@Table(catalog = "share-books", schema = "public", name = "activation_codes")
 @Entity
-public class Token {
+public class ActivationCode {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -43,8 +43,8 @@ public class Token {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    public static Token newActivationToken(String content, User user) {
-        return Token.builder()
+    public static ActivationCode newActivationToken(String content, User user) {
+        return ActivationCode.builder()
             .content(content)
             .createdAt(LocalDateTime.now())
             .expiresAt(LocalDateTime.now().plusMinutes(30))
