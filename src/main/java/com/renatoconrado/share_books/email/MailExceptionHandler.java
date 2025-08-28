@@ -1,9 +1,11 @@
 package com.renatoconrado.share_books.email;
 
+import com.renatoconrado.share_books.errorHandling.dto.ErrorResponse;
 import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
+import org.springframework.mail.MailSendException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -15,20 +17,22 @@ import static com.renatoconrado.share_books.errorHandling.GlobalExceptionHandler
 public class MailExceptionHandler {
 
     @ExceptionHandler(MessagingException.class)
-    public ResponseEntity<Map<String, Object>> handleMessagingException(
+    public ResponseEntity<ErrorResponse> handleMessagingException(
         MessagingException ex
     ) {
         return buildErrorResponse(
-            "Failed to send email: " + ex.getMessage(),
-            HttpStatus.INTERNAL_SERVER_ERROR
+            "Failed to send email",
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            Map.of("message", ex.getMessage())
         );
     }
 
     @ExceptionHandler(MailException.class)
-    public ResponseEntity<Map<String, Object>> handleMailException(MailException ex) {
+    public ResponseEntity<ErrorResponse> handleMailException(MailException ex) {
         return buildErrorResponse(
-            "Mail server error: " + ex.getMessage(),
-            HttpStatus.SERVICE_UNAVAILABLE
+            "Mail server error",
+            HttpStatus.SERVICE_UNAVAILABLE,
+            Map.of("message", ex.getMessage())
         );
     }
 

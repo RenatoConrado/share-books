@@ -73,13 +73,13 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(@Valid AuthenticationRequest request) {
-        var auth = this.authenticationManager.authenticate(
+        var authentication = this.authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(
                 request.email(),
                 request.password()
             )
         );
-        var user = (User) auth.getPrincipal();
+        var user = (User) authentication.getPrincipal();
 
         String jwtToken;
         if (user.getRealName() != null) {

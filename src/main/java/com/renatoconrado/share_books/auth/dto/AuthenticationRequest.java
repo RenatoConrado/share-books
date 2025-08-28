@@ -12,5 +12,8 @@ public record AuthenticationRequest(
 
     @Size(min = 8, max = 255, message = "minimum size of 8 characters")
     @NotBlank(message = "Field Cannot be empty")
-    String password
+    String password,
+
+    @Size(max = 70, message = "Max size of 70 characters")
+    String realName
 ) {}

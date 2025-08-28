@@ -1,9 +1,12 @@
 package com.renatoconrado.share_books.security.jwt;
 
+import com.renatoconrado.share_books.auth.AuthenticationExceptionHandler;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.io.DecodingException;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.WeakKeyException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -92,7 +95,13 @@ public class JwtService {
         return builderClaims.and().signWith(this.getSignInKey()).compact();
     }
 
-    private Key getSignInKey() {
+    /**
+     * @throws DecodingException if fail to decode
+     * {@link AuthenticationExceptionHandler#handleDecodingException(DecodingException)}
+     * @throws WeakKeyException if key is less than 32 bytes
+     * {@link AuthenticationExceptionHandler#handleWeakKeyException(WeakKeyException)}
+     */
+    private Key getSignInKey() throws DecodingException, WeakKeyException {
         byte[] keyBytes = Decoders.BASE64.decode(this.SECRET_KEY);
         return Keys.hmacShaKeyFor(keyBytes);
     }

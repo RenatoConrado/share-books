@@ -1,11 +1,11 @@
 package com.renatoconrado.share_books.security;
 
+import com.renatoconrado.share_books.errorHandling.exceptions.EntityNotFoundException;
 import com.renatoconrado.share_books.user.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 @RequiredArgsConstructor
@@ -16,10 +16,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Transactional
     @Override
-    public UserDetails loadUserByUsername(String email)
-        throws UsernameNotFoundException {
+    public UserDetails loadUserByUsername(String email) {
         return this.userRepository
             .findByEmail(email)
-            .orElseThrow(() -> new UsernameNotFoundException("User Details not Found"));
+            .orElseThrow(() -> new EntityNotFoundException(email, UserDetails.class));
     }
 }

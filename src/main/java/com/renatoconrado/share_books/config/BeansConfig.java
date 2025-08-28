@@ -1,6 +1,7 @@
 package com.renatoconrado.share_books.config;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+@Slf4j
 @RequiredArgsConstructor
 @Configuration
 public class BeansConfig {
@@ -27,7 +29,7 @@ public class BeansConfig {
 
     @Bean
     AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-        throws Exception {
+    throws Exception {
         return config.getAuthenticationManager();
     }
 

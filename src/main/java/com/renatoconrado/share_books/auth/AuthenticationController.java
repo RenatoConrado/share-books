@@ -11,6 +11,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * 1. register user,
+ * 2. Authenticate to generate token JWT
+ * 3. /activate-account using token JWT
+ * Now you can log in.
+ */
 @RequiredArgsConstructor
 @Tag(name = "Authentication")
 @RequestMapping("/auth")
@@ -27,7 +33,7 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<Object> register(@Valid @RequestBody RegisterRequest request)
-        throws MessagingException {
+    throws MessagingException {
         this.service.register(request);
 
         return ResponseEntity.ok().build();
@@ -42,7 +48,7 @@ public class AuthenticationController {
 
     @GetMapping("/activate-account")
     public ResponseEntity<String> activateAccount(@RequestParam String token)
-        throws MessagingException {
+    throws MessagingException {
         this.service.activateAccount(token);
         return ResponseEntity.ok().build();
     }
